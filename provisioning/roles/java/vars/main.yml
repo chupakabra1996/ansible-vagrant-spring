@@ -1,0 +1,12 @@
+---
+# Java folder
+java_folder: '/usr/java/jdk1.8.0_131'
+
+# JRE rpm package file name
+java_rpm: 'jdk-8u131-linux-x64.rpm'
+
+# JAVA_HOME environment variable value
+java_home: '{{ java_folder }}'
+
+# JRE_HOME environment variable
+jre_home: '{{ java_folder }}/jre'

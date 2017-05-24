@@ -1,0 +1,8 @@
+---
+# This playbook provisions web application servers with the app
+- hosts: all
+  remote_user: vagrant
+  become: yes
+  become_method: sudo
+  roles:
+    - webapp

@@ -1,0 +1,4 @@
+*.rpm
+.DS_Store
+.vagrant/
+

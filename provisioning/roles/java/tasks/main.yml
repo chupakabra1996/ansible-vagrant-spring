@@ -1,0 +1,21 @@
+---
+# Copy JRE rpm package to provisioned machine
+- name: Copy java 8 rpm package to provisioned machine
+  copy: 
+    src: '{{ java_rpm }}'
+    dest: '{{ ansible_env.HOME }}'
+
+# Install JRE from local rpm using yum
+- name: Install JRE 8 from rpm package
+  yum: 
+    name: '{{ ansible_env.HOME }}/{{ java_rpm }}'
+    state: present
+
+# Add JAVA_HOME and JRE_HOME to bash profile
+- name: Set up JAVA_HOME and JRE_HOME
+  template: 
+    src: java.sh.j2
+    dest: /etc/profile.d/java.sh
+    owner: root
+    group: root
+    mode: 0644
