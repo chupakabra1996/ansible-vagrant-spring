@@ -1,12 +1,12 @@
 ---
-# Copy JRE rpm package to provisioned machine
+# Copy jdk rpm package to provisioned machine
 - name: Copy java 8 rpm package to provisioned machine
   copy: 
     src: '{{ java_rpm }}'
     dest: '{{ ansible_env.HOME }}'
 
-# Install JRE from local rpm using yum
-- name: Install JRE 8 from rpm package
+# Install Java 8 from local rpm using yum
+- name: Install Java 8 from rpm package
   yum: 
     name: '{{ ansible_env.HOME }}/{{ java_rpm }}'
     state: present
