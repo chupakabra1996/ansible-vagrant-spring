@@ -3,7 +3,8 @@
 VAGRANTFILE_API_VERSION = "2"
 
 # --- Configuration variables ---
-RAM = 1024
+DEFAULT_RAM = 1024
+DB_RAM = 2048
 
 # network configuration
 DOMAIN = ".kpfu.ru"
@@ -32,61 +33,79 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # define host variables
     ansible.host_vars = {
       
-      "production" => {
-        "env" => "production"
+      "webserver1" => {
+        "env" => "staging web server environment"
       },
-      "test" => {
-        "env" => "test"
+      "webserver2" => {
+        "env" => "production web server environment"
+      },
+      "neo4j" => {
+        "env" => "neo4j server environment"
       }
     }
 
-    # define group web with 2 hosts (test and production)
+    # define groups
     ansible.groups = {
-      "web": ["test", "production"]
+      "webservers": ["webserver1", "webserver2"],
+      "databases": ["neo4j"]
     }
 
     # define extra vars
     ansible.extra_vars = {
       "http_port" => HTTP_PORT,
-      "user" => "vagrant",
+      "remote_user" => "vagrant",
       "group" => "vagrant"
     }
 
     # ansible vault settings
-    # ansible.ask_vault_pass = true
     ansible.vault_password_file = 'provisioning/.vault_pass.txt'
   end
 
   # --- Vagrant configuration ---
 
+  # host №1 
   config.vm.provider "virtualbox" do |vb|
-     vb.memory = RAM     # specify RAM in MB
+     vb.memory = DEFAULT_RAM     # specify RAM in MB
   end
 
-  config.vm.define "production" do |prod|
+  config.vm.define "webserver1" do |host|
 
-    prod.vm.hostname = 'prod' + DOMAIN
-  	prod.vm.network "forwarded_port", guest: HTTP_PORT, host: 8081
-
-  	prod.vm.provider :virtualbox do |vb|
-          vb.name = "centos7-production"
-    end
-
-    prod.vm.network :forwarded_port, guest: 22, host: 20021, id: "ssh"
-
-  end
-
-
-  config.vm.define "test" do |test|
+    host.vm.hostname = 'webserver1' + DOMAIN
   	
-    test.vm.hostname = 'test' + DOMAIN
-  	test.vm.network "forwarded_port", guest: HTTP_PORT, host: 8082
-
-  	test.vm.provider :virtualbox do |vb|
-        vb.name = "centos7-test"
+  	host.vm.provider :virtualbox do |vb|
+          vb.name = "centos7-webserver1"
     end
 
-    test.vm.network :forwarded_port, guest: 22, host: 20022, id: "ssh"
+    host.vm.network "forwarded_port", guest: HTTP_PORT, host: 8081
+    host.vm.network :forwarded_port, guest: 22, host: 20021, id: "ssh"
+
+  end
+
+  # host №2
+  config.vm.define "webserver2" do |host|
+  	
+    host.vm.hostname = 'webserver2' + DOMAIN
+
+  	host.vm.provider :virtualbox do |vb|
+        vb.name = "centos7-webserver2"
+    end
+
+    host.vm.network "forwarded_port", guest: HTTP_PORT, host: 8082
+    host.vm.network :forwarded_port, guest: 22, host: 20022, id: "ssh"
+
+  end
+
+  # host №3
+  config.vm.define "neo4j" do |host|
+
+    host.vm.hostname = 'neo4j' + DOMAIN
+
+    host.vm.provider :virtualbox do |vb|
+          vb.name = "centos7-neo4j"
+    end
+
+    # host.vm.network "forwarded_port", guest: HTTP_PORT, host: 8081
+    host.vm.network :forwarded_port, guest: 22, host: 20023, id: "ssh"
 
   end
 end

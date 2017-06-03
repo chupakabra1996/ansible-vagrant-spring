@@ -1,0 +1,14 @@
+---
+
+# This playbook is for webservers group
+
+- hosts: webservers
+  remote_user: '{{ user }}'
+  become: yes
+  become_method: 'sudo'
+  roles:
+    - common
+    # - selinux
+    # - java
+    # - tomcat
+    # - postgres

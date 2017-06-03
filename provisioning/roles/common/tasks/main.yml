@@ -1,18 +1,17 @@
 ---
 
-# Install yum packages
-- name: Install common yum packages
+- name: Installing common packages
   debug: 
     msg: 'Installing yum packages on {{ env }}'
 
 - name: Check whether group present
   group:
     name: '{{ group }}'
-    state: 'present'
+    state: present
 
 - name: Check whether user present
   user:
     name: '{{ user }}'
-    state: 'present'
+    state: present
 
 

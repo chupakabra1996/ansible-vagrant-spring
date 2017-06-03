@@ -1,11 +1,5 @@
 ---
-# This playbook provisions web application servers with the app
-- hosts: web
-  remote_user: '{{ user }}'
-  become: yes
-  become_method: sudo
-  roles:
-    - common
-    - selinux
-    - java
-    - tomcat
+
+- include: webservers.yml
+- include: databases.yml
+
