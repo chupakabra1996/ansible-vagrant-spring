@@ -45,20 +45,6 @@
     recurse: 'yes'
 
 
-- name: Copy server.xml config file
-  template:
-    src: 'tomcat/conf/server.xml'
-    dest: '{{ tomcat_user_home }}/conf/'
-  # notify: 'restart tomcat'
-
-
-- name: Copy tomcat-users.xml config file
-  template:
-    src: 'tomcat/conf/tomcat-users.xml'
-    dest: '{{ tomcat_user_home }}/conf/'
-  # notify: 'restart tomcat'
-
-
 - name: Set up CATALINA PATHS
   template: 
     src: 'tomcat/tomcat.sh.j2'
@@ -68,12 +54,47 @@
     mode: 0644
 
 
+- name: Copy server.xml config file
+  template:
+    src: 'tomcat/conf/server.xml'
+    dest: '{{ tomcat_user_home }}/conf/'
+  notify: 'restart tomcat'
+
+
+- name: Copy tomcat-users.xml config file
+  template:
+    src: 'tomcat/conf/tomcat-users.xml'
+    dest: '{{ tomcat_user_home }}/conf/'
+  notify: 'restart tomcat'
+
+# CHECK THIS
+- name: Create tomcat init script
+  template: 
+    src: 'tomcat-init.sh.j2'
+    dest: '/etc/init.d/tomcat'
+    owner: 'root'
+    group: 'root'
+    mode: 0766
+
+
 - name: Open http port
   firewalld:
     port: '{{ http_port }}/tcp'
     permanent: true
-    zone: 'public'
     state: enabled
+    immediate: 'yes'
+
+
+- name: Start tomcat service
+  shell: '/etc/init.d/tomcat start'
+
+
+# CHECK THIS
+
+- name: wait for tomcat to start
+  wait_for:
+    port: '{{ http_port }}'
+    timeout: 60
 
 
 

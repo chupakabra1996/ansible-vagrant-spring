@@ -30,6 +30,7 @@
     group: '{{ group }}'
     mode: 0644
 
+
 - name: Make Java available for system
   command: 'alternatives --install "/usr/bin/java" "java" "{{ java_home }}/bin/java" 1'
 
