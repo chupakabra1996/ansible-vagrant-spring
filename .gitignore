@@ -1,4 +1,5 @@
 *.rpm
 .DS_Store
 .vagrant/
-
+*.retry
+.vault_pass.txt

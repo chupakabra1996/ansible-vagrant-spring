@@ -1,12 +1,11 @@
 ---
-# Java folder
-java_folder: '/usr/java/jdk1.8.0_131'
 
-# JRE rpm package file name
-java_rpm: 'jdk-8u131-linux-x64.rpm'
+download_url: 'http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.tar.gz'
 
-# JAVA_HOME environment variable value
-java_home: '{{ java_folder }}'
+download_folder: /opt
+  
+java_archive: "{{ download_folder }}/jdk-8u131-linux-x64.tar.gz"
 
-# JRE_HOME environment variable
-jre_home: '{{ java_folder }}/jre'
+java_home: '{{ download_folder }}/jdk1.8.0_131'
+
+jre_home: '{{ java_home }}/jre'

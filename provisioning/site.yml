@@ -1,8 +1,11 @@
 ---
 # This playbook provisions web application servers with the app
-- hosts: all
-  remote_user: vagrant
+- hosts: web
+  remote_user: '{{ user }}'
   become: yes
   become_method: sudo
   roles:
-    - webapp
+    - common
+    - selinux
+    - java
+    - tomcat

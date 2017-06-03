@@ -1,0 +1,80 @@
+---
+
+- name: Add tomcat group
+  group:
+   name: 'tomcat'
+   state: 'present'
+
+
+- name: Add tomcat user
+  become: true
+  become_method: 'sudo'
+  user:
+    state: 'present'
+    name: 'tomcat'
+    group: 'tomcat'
+    home: '{{ tomcat_user_home }}'
+    createhome: 'no'
+
+
+- name: Download tomcat
+  get_url:
+    dest: '{{ tomcat_archive }}'
+    url: '{{ download_url }}'
+
+
+- name: Unpack tomcat archive
+  command: '/bin/tar -zxf {{ tomcat_archive }} -C {{ download_folder }}'
+  args:
+    creates: '{{ catalina_base }}'
+
+
+- name: Symlink install directory
+  file: 
+    src: '{{ catalina_base }}'
+    path: '{{ tomcat_user_home }}'
+    state: 'link'
+
+
+- name: Change ownership of Tomcat installation
+  file: 
+    path: '{{ tomcat_user_home }}/'
+    owner: 'tomcat'
+    group: 'tomcat'
+    state: 'directory'
+    recurse: 'yes'
+
+
+- name: Copy server.xml config file
+  template:
+    src: 'tomcat/conf/server.xml'
+    dest: '{{ tomcat_user_home }}/conf/'
+  # notify: 'restart tomcat'
+
+
+- name: Copy tomcat-users.xml config file
+  template:
+    src: 'tomcat/conf/tomcat-users.xml'
+    dest: '{{ tomcat_user_home }}/conf/'
+  # notify: 'restart tomcat'
+
+
+- name: Set up CATALINA PATHS
+  template: 
+    src: 'tomcat/tomcat.sh.j2'
+    dest: /etc/profile.d/tomcat.sh
+    owner: '{{ user }}'
+    group: '{{ group }}'
+    mode: 0644
+
+
+- name: Open http port
+  firewalld:
+    port: '{{ http_port }}/tcp'
+    permanent: true
+    zone: 'public'
+    state: enabled
+
+
+
+

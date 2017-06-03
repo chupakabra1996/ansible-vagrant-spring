@@ -13,9 +13,10 @@ BOX = "centos/7"
 
 # Ansible configuration
 ANSIBLE_PLAYBOOK = "provisioning/site.yml"
+HTTP_PORT = 8080
 
 
-Vagrant.configure("2") do |config|
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.box = BOX
 
@@ -27,6 +28,33 @@ Vagrant.configure("2") do |config|
   config.vm.provision "ansible" do |ansible|
     ansible.verbose = "v"                     # enable verbose output
     ansible.playbook = ANSIBLE_PLAYBOOK       # playbook to run
+    
+    # define host variables
+    ansible.host_vars = {
+      
+      "production" => {
+        "env" => "production"
+      },
+      "test" => {
+        "env" => "test"
+      }
+    }
+
+    # define group web with 2 hosts (test and production)
+    ansible.groups = {
+      "web": ["test", "production"]
+    }
+
+    # define extra vars
+    ansible.extra_vars = {
+      "http_port" => HTTP_PORT,
+      "user" => "vagrant",
+      "group" => "vagrant"
+    }
+
+    # ansible vault settings
+    # ansible.ask_vault_pass = true
+    ansible.vault_password_file = 'provisioning/.vault_pass.txt'
   end
 
   # --- Vagrant configuration ---
@@ -38,7 +66,7 @@ Vagrant.configure("2") do |config|
   config.vm.define "production" do |prod|
 
     prod.vm.hostname = 'prod' + DOMAIN
-  	prod.vm.network "forwarded_port", guest: 8080, host: 8081
+  	prod.vm.network "forwarded_port", guest: HTTP_PORT, host: 8081
 
   	prod.vm.provider :virtualbox do |vb|
           vb.name = "centos7-production"
@@ -52,7 +80,7 @@ Vagrant.configure("2") do |config|
   config.vm.define "test" do |test|
   	
     test.vm.hostname = 'test' + DOMAIN
-  	test.vm.network "forwarded_port", guest: 8080, host: 8082
+  	test.vm.network "forwarded_port", guest: HTTP_PORT, host: 8082
 
   	test.vm.provider :virtualbox do |vb|
         vb.name = "centos7-test"
