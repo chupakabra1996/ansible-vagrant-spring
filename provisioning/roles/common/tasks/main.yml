@@ -32,3 +32,14 @@
 - name: Install libselinux-python
   yum: 
     name: 'libselinux-python'
+
+- name: Install common sofware
+  yum:
+    name: '{{ item }}'
+    state: installed
+  with_items:
+    - git
+    - htop
+    - nano
+    - vim
+    - tree

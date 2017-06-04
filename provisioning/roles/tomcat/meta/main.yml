@@ -1,0 +1,7 @@
+---
+
+dependencies:
+  - { role: common }
+  - { role: java }
+  - { role: postgres }
+  - { role: firewalld, spec_port: '{{ http_port }}' }

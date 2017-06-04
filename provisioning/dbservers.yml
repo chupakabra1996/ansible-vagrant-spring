@@ -3,7 +3,7 @@
 - hosts: databases
   remote_user: '{{ vagrant_user }}'
   become: yes
-  become_method: 'sudo'
+  become_method: sudo
   roles:
     - common
     - java

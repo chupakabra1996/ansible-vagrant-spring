@@ -51,11 +51,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     }
 
     # define extra vars
-    ansible.extra_vars = {
-      "http_port" => HTTP_PORT,
-      "vagrant_user" => "vagrant",
-      "vagrant_group" => "vagrant"
-    }
+    ansible.extra_vars = {}
 
     # ansible vault settings
     ansible.vault_password_file = 'provisioning/.vault_pass.txt'
