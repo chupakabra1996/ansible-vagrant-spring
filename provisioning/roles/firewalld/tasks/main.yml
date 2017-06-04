@@ -1,16 +1,16 @@
 ---
 
-- name: Enable firewalld
+- name: Enable and start firewalld via systemctl
   service: 
     name: firewalld
     state: started
     enabled: yes
 
 
-- name: Open http port with firewalld
+- name: Open specified port
   become: yes
   firewalld:
-    port: '{{ http_port }}/tcp'
+    port: '{{ spec_port }}/tcp'
     permanent: true
     state: enabled
     immediate: yes

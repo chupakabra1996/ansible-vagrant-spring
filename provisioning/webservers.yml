@@ -5,9 +5,10 @@
 - hosts: webservers
   remote_user: '{{ vagrant_user }}'
   become: yes
-  become_method: 'sudo'
+  become_method: sudo
   roles:
     - common
     - java
     - tomcat
+    - { role: firewalld, spec_port: '{{ http_port }}' }
     # - postgres

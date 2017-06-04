@@ -24,6 +24,7 @@ tomcat_user_home: '/usr/share/tomcat'
 
 
 # Configuration variables
+# See https://tomcat.apache.org/tomcat-8.0-doc/config/http.html
 allow_trace: 'true'
 connection_timeout: 10000
 enable_lookups: 'false'
@@ -40,7 +41,7 @@ compressable_mime_type: 'text/html,text/xml,text/plain,application/octet-stream'
 
 
 
-# secret variables, comes with asnible 2.3+
+# secret variables, comes with asnible 2.3.x
 
 admin_username: !vault |
           $ANSIBLE_VAULT;1.1;AES256

@@ -58,15 +58,17 @@
 
 - name: Copy server.xml template config file
   template:
-    src: 'conf/server.xml'
-    dest: '{{ tomcat_user_home }}/conf/'
+    src: 'conf/server.xml.j2'
+    dest: '{{ tomcat_user_home }}/conf/server.xml'
+    backup: yes
   notify: 'restart tomcat'
 
 
 - name: Copy tomcat-users.xml config file
   template:
-    src: 'conf/tomcat-users.xml'
-    dest: '{{ tomcat_user_home }}/conf/'
+    src: 'conf/tomcat-users.xml.j2'
+    dest: '{{ tomcat_user_home }}/conf/tomcat-users.xml'
+    backup: yes
   notify: 'restart tomcat'
 
 
@@ -77,9 +79,6 @@
     owner: 'root'
     group: 'root'
     mode: 0766
-
-
-- include: firewalld.yml
 
 
 - name: Start tomcat service
