@@ -1,11 +1,10 @@
 ---
 
 - hosts: databases
-  remote_user: '{{ user }}'
+  remote_user: '{{ vagrant_user }}'
   become: yes
   become_method: 'sudo'
   roles:
     - common
-    # - selinux
-    # - java
+    - java
     # - neo4j

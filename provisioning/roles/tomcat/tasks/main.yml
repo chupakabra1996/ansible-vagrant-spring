@@ -1,23 +1,25 @@
 ---
 
-- name: Add tomcat group
-  group:
-   name: 'tomcat'
-   state: 'present'
-
-
-- name: Add tomcat user
+- name: Create tomcat group
   become: true
-  become_method: 'sudo'
+  become_method: sudo
+  group:
+   name: '{{ tomcat_group }}'
+   state: present
+
+
+- name: Create tomcat user
+  become: true
+  become_method: sudo
   user:
-    state: 'present'
+    state: present
     name: 'tomcat'
     group: 'tomcat'
     home: '{{ tomcat_user_home }}'
-    createhome: 'no'
+    createhome: no
 
 
-- name: Download tomcat
+- name: Download tomcat archive
   get_url:
     dest: '{{ tomcat_archive }}'
     url: '{{ download_url }}'
@@ -29,69 +31,62 @@
     creates: '{{ catalina_base }}'
 
 
-- name: Symlink install directory
+- name: Symlink tomcat installation directory
   file: 
     src: '{{ catalina_base }}'
     path: '{{ tomcat_user_home }}'
-    state: 'link'
+    state: link
 
 
-- name: Change ownership of Tomcat installation
+- name: Change ownership of tomcat installation directory
   file: 
     path: '{{ tomcat_user_home }}/'
-    owner: 'tomcat'
-    group: 'tomcat'
-    state: 'directory'
-    recurse: 'yes'
+    owner: '{{ tomcat_user }}'
+    group: '{{ tomcat_group }}'
+    state: directory
+    recurse: yes
 
 
-- name: Set up CATALINA PATHS
+- name: Set up CATALINA PATHs
   template: 
-    src: 'tomcat/tomcat.sh.j2'
-    dest: /etc/profile.d/tomcat.sh
-    owner: '{{ user }}'
-    group: '{{ group }}'
+    src: 'tomcat.sh.j2'
+    dest: '/etc/profile.d/tomcat.sh'
+    owner: '{{ vagrant_user }}'
+    group: '{{ vagrant_group }}'
     mode: 0644
 
 
-- name: Copy server.xml config file
+- name: Copy server.xml template config file
   template:
-    src: 'tomcat/conf/server.xml'
+    src: 'conf/server.xml'
     dest: '{{ tomcat_user_home }}/conf/'
   notify: 'restart tomcat'
 
 
 - name: Copy tomcat-users.xml config file
   template:
-    src: 'tomcat/conf/tomcat-users.xml'
+    src: 'conf/tomcat-users.xml'
     dest: '{{ tomcat_user_home }}/conf/'
   notify: 'restart tomcat'
 
-# CHECK THIS
-- name: Create tomcat init script
+
+- name: Create tomcat init script in '/etc/init.d/tomcat'
   template: 
-    src: 'tomcat-init.sh.j2'
+    src: 'init/tomcat-init.sh.j2'
     dest: '/etc/init.d/tomcat'
     owner: 'root'
     group: 'root'
     mode: 0766
 
 
-- name: Open http port
-  firewalld:
-    port: '{{ http_port }}/tcp'
-    permanent: true
-    state: enabled
-    immediate: 'yes'
+- include: firewalld.yml
 
 
 - name: Start tomcat service
   shell: '/etc/init.d/tomcat start'
 
 
-# CHECK THIS
-
-- name: wait for tomcat to start
+- name: Wait for tomcat to start
   wait_for:
     port: '{{ http_port }}'
     timeout: 60

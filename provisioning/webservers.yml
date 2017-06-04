@@ -3,12 +3,11 @@
 # This playbook is for webservers group
 
 - hosts: webservers
-  remote_user: '{{ user }}'
+  remote_user: '{{ vagrant_user }}'
   become: yes
   become_method: 'sudo'
   roles:
     - common
-    # - selinux
-    # - java
-    # - tomcat
+    - java
+    - tomcat
     # - postgres

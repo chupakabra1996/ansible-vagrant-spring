@@ -34,13 +34,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     ansible.host_vars = {
       
       "webserver1" => {
-        "env" => "staging web server environment"
+        "env" => "staging"
       },
       "webserver2" => {
-        "env" => "production web server environment"
+        "env" => "production"
       },
       "neo4j" => {
-        "env" => "neo4j server environment"
+        "env" => "neo4j"
       }
     }
 
@@ -53,8 +53,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # define extra vars
     ansible.extra_vars = {
       "http_port" => HTTP_PORT,
-      "remote_user" => "vagrant",
-      "group" => "vagrant"
+      "vagrant_user" => "vagrant",
+      "vagrant_group" => "vagrant"
     }
 
     # ansible vault settings

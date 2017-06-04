@@ -16,18 +16,18 @@
 
 - name: Set ownership
   file:
-    state: 'directory'
+    state: directory
     path: '{{ java_home }}'
-    owner: '{{ user }}'
-    group: '{{ group }}'
-    recurse: 'yes'
+    owner: '{{ vagrant_user }}'
+    group: '{{ vagrant_group }}'
+    recurse: yes
 
 - name: Set up JAVA_HOME and JRE_HOME
   template: 
-    src: java.sh.j2
-    dest: /etc/profile.d/java.sh
-    owner: '{{ user }}'
-    group: '{{ group }}'
+    src: 'java.sh.j2'
+    dest: '/etc/profile.d/java.sh'
+    owner: '{{ vagrant_user }}'
+    group: '{{ vagrant_group }}'
     mode: 0644
 
 

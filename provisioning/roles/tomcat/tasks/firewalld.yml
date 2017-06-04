@@ -1,0 +1,16 @@
+---
+
+- name: Enable firewalld
+  service: 
+    name: firewalld
+    state: started
+    enabled: yes
+
+
+- name: Open http port with firewalld
+  become: yes
+  firewalld:
+    port: '{{ http_port }}/tcp'
+    permanent: true
+    state: enabled
+    immediate: yes
