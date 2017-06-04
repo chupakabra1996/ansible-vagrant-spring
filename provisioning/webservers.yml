@@ -9,6 +9,6 @@
   roles:
     - common
     - java
-    - postgres
+    - postgresql
     - { role: firewalld, spec_port: '{{ http_port }}' }
     - tomcat

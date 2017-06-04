@@ -3,5 +3,5 @@
 dependencies:
   - { role: common }
   - { role: java }
-  - { role: postgres }
+  - { role: postgresql }
   - { role: firewalld, spec_port: '{{ http_port }}' }

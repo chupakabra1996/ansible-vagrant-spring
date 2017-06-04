@@ -4,6 +4,7 @@ VAGRANTFILE_API_VERSION = "2"
 
 # --- Configuration variables ---
 DEFAULT_RAM = 1024
+DEFAULT_CPUS = 1
 DB_RAM = 2048
 
 # network configuration
@@ -14,7 +15,9 @@ BOX = "centos/7"
 
 # Ansible configuration
 ANSIBLE_PLAYBOOK = "provisioning/site.yml"
+
 HTTP_PORT = 8080
+POSTGRES_PORT = 5432
 
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
@@ -62,6 +65,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # host №1 
   config.vm.provider "virtualbox" do |vb|
      vb.memory = DEFAULT_RAM     # specify RAM in MB
+     vb.cpus   = DEFAULT_CPUS    # specify cpus number
   end
 
   config.vm.define "webserver1" do |host|
@@ -71,6 +75,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   	host.vm.provider :virtualbox do |vb|
           vb.name = "centos7-webserver1"
     end
+
+    host.vm.network "private_network", ip: "192.168.50.2"
 
     host.vm.network "forwarded_port", guest: HTTP_PORT, host: 8081
     host.vm.network :forwarded_port, guest: 22, host: 20021, id: "ssh"
@@ -86,6 +92,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         vb.name = "centos7-webserver2"
     end
 
+    host.vm.network "private_network", ip: "192.168.50.3"
+
     host.vm.network "forwarded_port", guest: HTTP_PORT, host: 8082
     host.vm.network :forwarded_port, guest: 22, host: 20022, id: "ssh"
 
@@ -98,6 +106,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     host.vm.provider :virtualbox do |vb|
           vb.name = "centos7-neo4j"
+          vb.memory = DB_RAM
     end
 
     # host.vm.network "forwarded_port", guest: HTTP_PORT, host: 8081

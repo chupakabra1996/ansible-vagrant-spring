@@ -1,5 +1,0 @@
----
-
-- name: Installing postgres
-  debug: 
-    msg: 'Installing postgres on {{ postgres_port }}'

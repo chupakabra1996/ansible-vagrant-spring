@@ -61,7 +61,6 @@
     src: 'conf/server.xml.j2'
     dest: '{{ tomcat_user_home }}/conf/server.xml'
     backup: yes
-  notify: 'restart tomcat'
 
 
 - name: Copy tomcat-users.xml config file
@@ -69,7 +68,6 @@
     src: 'conf/tomcat-users.xml.j2'
     dest: '{{ tomcat_user_home }}/conf/tomcat-users.xml'
     backup: yes
-  notify: 'restart tomcat'
 
 
 - name: Create tomcat init script in '/etc/init.d/tomcat'
