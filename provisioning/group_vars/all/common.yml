@@ -1,0 +1,6 @@
+---
+
+http_port: 8080
+
+vagrant_user: 'vagrant'
+vagrant_group: 'vagrant'

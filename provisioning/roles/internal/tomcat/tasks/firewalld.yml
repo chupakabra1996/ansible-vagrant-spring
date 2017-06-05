@@ -1,0 +1,16 @@
+---
+
+- name: Enable and start firewalld | Role tomcat | firewalld
+  service: 
+    name: firewalld
+    state: started
+    enabled: yes
+
+
+- name: Open specified port | Role tomcat | firewalld
+  become: yes
+  firewalld:
+    port: '{{ firewalld_port }}/tcp'
+    permanent: True
+    state: enabled
+    immediate: yes

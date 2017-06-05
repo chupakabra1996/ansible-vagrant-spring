@@ -1,0 +1,57 @@
+---
+
+- name: Create user group | Role common
+  group:
+    name: '{{ vagrant_group }}'
+    state: present
+  tags:
+    - configuration
+
+
+- name: Create user | Role common
+  user:
+    name: '{{ vagrant_user }}'
+    state: present
+  tags:
+    - configuration
+
+
+# Download and install EPEL for Centos/RHEL version 7
+- name: Download EPEL Repo - Centos/RHEL 7 | Role common
+  get_url:
+    url: 'http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm'
+    dest: '/tmp/epel-release-latest-7.noarch.rpm'
+  when: "ansible_os_family == 'RedHat' and ansible_distribution_major_version == '7'"
+  tags:
+    - configuration
+
+
+
+- name: Install EPEL Repo - Centos/RHEL 7 | Role common
+  command: 'rpm -ivh /tmp/epel-release-latest-7.noarch.rpm'
+  args:
+    creates: '/etc/yum.repos.d/epel.repo'
+  when: "ansible_os_family == 'RedHat' and ansible_distribution_major_version == '7'"
+  tags:
+    - configuration
+
+
+- name: Install libselinux-python | Role common
+  yum: 
+    name: 'libselinux-python'
+  tags:
+    - configuration
+
+
+- name: Install common sofware | Role common
+  yum:
+    name: '{{ item }}'
+    state: installed
+  with_items:
+    - git
+    - htop
+    - nano
+    - vim
+    - tree
+  tags:
+    - installation

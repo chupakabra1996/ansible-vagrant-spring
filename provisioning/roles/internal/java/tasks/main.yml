@@ -1,0 +1,52 @@
+---
+
+- name: Download jdk tar.gz archive | Role java
+  get_url:
+    headers: 'Cookie:gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie'
+    dest: '{{ java_archive }}'
+    url: '{{ java_download_url }}'
+    validate_certs: True
+  tags:
+    - installation
+
+
+- name: Unpack jdk archive | Role java
+  command: '/bin/tar -zxf {{ java_archive }} -C {{ java_download_folder }}'
+  args:
+    creates: '{{ java_home }}'
+  tags:
+    - installation
+
+
+- name: Set ownership to the JAVA_HOME directory | Role java
+  file:
+    state: directory
+    path: '{{ java_home }}'
+    owner: '{{ vagrant_user }}'
+    group: '{{ vagrant_group }}'
+    recurse: yes
+  tags:
+    - configuration
+
+
+- name: Export Java system variables | Role java
+  template: 
+    src: 'java.sh.j2'
+    dest: '/etc/profile.d/java.sh'
+    owner: '{{ vagrant_user }}'
+    group: '{{ vagrant_group }}'
+    mode: 'u=rw,g=r,o=r'
+  tags:
+    - configuration
+
+
+- name: Make Java available for system | Role java
+  command: 'alternatives --install "/usr/bin/java" "java" "{{ java_home }}/bin/java" 1'
+  tags:
+    - configuration
+
+
+# - name: Remove tar.gz java archive
+# file:
+#   state: 'absent'
+#   path: '{{ java_archive }}'

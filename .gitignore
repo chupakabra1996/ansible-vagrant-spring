@@ -2,4 +2,6 @@
 .DS_Store
 .vagrant/
 *.retry
-.vault_pass.txt
+.vault_pass*
+*.tar.gz
+*.zip

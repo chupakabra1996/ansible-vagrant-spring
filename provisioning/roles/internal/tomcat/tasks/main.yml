@@ -1,0 +1,125 @@
+---
+
+- name: Create tomcat group | Role tomcat
+  become: True
+  become_method: sudo
+  group:
+   name: '{{ tomcat_group }}'
+   state: present
+  tags:
+    - configuration
+
+
+- name: Create tomcat user
+  become: True
+  become_method: sudo
+  user:
+    state: present
+    name: '{{ tomcat_user }}'
+    group: '{{ tomcat_group }}'
+    home: '{{ tomcat_user_home }}'
+    createhome: no
+  tags:
+    - configuration
+
+
+- name: Download tomcat archive | Role tomcat
+  get_url:
+    dest: '{{ tomcat_archive }}'
+    url: '{{ tomcat_download_url }}'
+  tags:
+    - installation
+
+
+- name: Unpack tomcat tar.gz archive | Role tomcat
+  command: '/bin/tar -zxf {{ tomcat_archive }} -C {{ tomcat_download_folder }}'
+  args:
+    creates: '{{ tomcat_catalina_base }}'
+  tags:
+    - installation
+
+
+- name: Symlink tomcat installation directory | Role tomcat
+  file: 
+    src: '{{ tomcat_catalina_base }}'
+    path: '{{ tomcat_user_home }}'
+    state: link
+  tags:
+    - configuration
+
+
+- name: Change ownership of tomcat installation directory | Role tomcat
+  file: 
+    path: '{{ tomcat_user_home }}/'
+    owner: '{{ tomcat_user }}'
+    group: '{{ tomcat_group }}'
+    state: directory
+    recurse: yes
+  tags:
+    - configuration
+
+
+- name: Set up system variables | Role tomcat
+  template: 
+    src: 'tomcat.sh.j2'
+    dest: '/etc/profile.d/tomcat.sh'
+    owner: '{{ vagrant_user }}'
+    group: '{{ vagrant_group }}'
+    mode: 'u=rw,g=r,o=r'
+  tags:
+    - configuration
+
+
+
+- name: Copy 'server.xml' template config file | Role tomcat
+  template:
+    src: 'conf/server.xml.j2'
+    dest: '{{ tomcat_user_home }}/conf/server.xml'
+    backup: yes
+  tags:
+    - configuration
+
+
+- name: Copy 'tomcat-users.xml' config file | Role tomcat
+  template:
+    src: 'conf/tomcat-users.xml.j2'
+    dest: '{{ tomcat_user_home }}/conf/tomcat-users.xml'
+    backup: yes
+  tags:
+    - configuration
+
+
+- name: Create tomcat init script in '/etc/init.d/tomcat' | Role tomcat
+  template: 
+    src: 'initd/tomcat-init.sh.j2'
+    dest: '/etc/init.d/tomcat'
+    owner: 'root'
+    group: 'root'
+    mode: 'u=rwx,g=rw,o=rw'
+  tags:
+    - configuration
+
+
+# Check if tomcat is started -> register flag -> check it below
+
+- name: Start tomcat service | Role tomcat
+  shell: '/etc/init.d/tomcat start'
+  tags:
+    - launch
+    - configuration
+
+
+- include: firewalld.yml
+  vars:
+    firewalld_port: '{{ http_port }}'
+  tags:
+    - configuration
+
+
+- name: Wait for tomcat to start | Role tomcat
+  wait_for:
+    port: '{{ http_port }}'
+    timeout: 60
+  tags:
+    - launch
+    - configuration

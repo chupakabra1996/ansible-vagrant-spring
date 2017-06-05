@@ -1,0 +1,6 @@
+---
+
+# PostgresSQL
+- src: git+https://github.com/ANXS/postgresql.git
+  version: "v1.7.1"
+  name: postgresql

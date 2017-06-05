@@ -13,9 +13,6 @@ DOMAIN = ".kpfu.ru"
 # Default virtualbox .box
 BOX = "centos/7"
 
-# Ansible configuration
-ANSIBLE_PLAYBOOK = "provisioning/site.yml"
-
 HTTP_PORT = 8080
 POSTGRES_PORT = 5432
 
@@ -30,22 +27,21 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.ssh.insert_key = false
 
   config.vm.provision "ansible" do |ansible|
-    ansible.verbose = "v"                     # enable verbose output
-    ansible.playbook = ANSIBLE_PLAYBOOK       # playbook to run
     
+    # enable verbose output
+    ansible.verbose = "v"
+    
+    # playbook to run
+    # ansible.playbook = "provisioning/plays/site.yml"
+    ansible.playbook = "provisioning/site.yml" 
+
+    ansible.config_file = "provisioning/.ansible.cfg"
+
+    # define extra vars
+    ansible.extra_vars = {}
+
     # define host variables
-    ansible.host_vars = {
-      
-      "webserver1" => {
-        "env" => "staging"
-      },
-      "webserver2" => {
-        "env" => "production"
-      },
-      "neo4j" => {
-        "env" => "neo4j"
-      }
-    }
+    ansible.host_vars = {}
 
     # define groups
     ansible.groups = {
@@ -53,21 +49,24 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       "databases": ["neo4j"]
     }
 
-    # define extra vars
-    ansible.extra_vars = {}
-
     # ansible vault settings
-    ansible.vault_password_file = 'provisioning/.vault_pass.txt'
+    ansible.vault_password_file = 'provisioning/.vault_pass'
+
+    # hack to be able to use multiple roles paths
+    # See https://stackoverflow.com/questions/36918516/change-ansible-role-path-with-vagrant-provision
+    vagrant_root = File.dirname(__FILE__) 
+    ENV['ANSIBLE_ROLES_PATH'] = "#{vagrant_root}/provisioning/roles/internal:#{vagrant_root}/provisioning/roles/external"
+
   end
 
   # --- Vagrant configuration ---
 
-  # host №1 
   config.vm.provider "virtualbox" do |vb|
      vb.memory = DEFAULT_RAM     # specify RAM in MB
      vb.cpus   = DEFAULT_CPUS    # specify cpus number
   end
 
+  # host №1 
   config.vm.define "webserver1" do |host|
 
     host.vm.hostname = 'webserver1' + DOMAIN
@@ -109,8 +108,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           vb.memory = DB_RAM
     end
 
-    # host.vm.network "forwarded_port", guest: HTTP_PORT, host: 8081
+    host.vm.network "private_network", ip: "192.168.50.4"
+
     host.vm.network :forwarded_port, guest: 22, host: 20023, id: "ssh"
 
   end
+
 end
