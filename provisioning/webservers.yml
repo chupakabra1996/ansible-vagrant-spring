@@ -7,7 +7,7 @@
   become: yes
   become_method: sudo
   roles:
-    # - common
-    # - java
-    # - { role: postgresql }
+    - common
+    - java
+    - postgresql
     - tomcat

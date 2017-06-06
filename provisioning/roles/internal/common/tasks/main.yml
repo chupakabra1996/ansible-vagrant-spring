@@ -53,5 +53,7 @@
     - nano
     - vim
     - tree
+    - wget
+    - nmap
   tags:
     - installation

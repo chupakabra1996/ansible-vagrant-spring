@@ -1,0 +1,93 @@
+---
+- name: Import gpg neoj4 key | Role neo4j
+  rpm_key:
+    state: present
+    key: '{{ neo4j_gpg_key_url }}'
+
+
+- name: Add repository | Role neo4j
+  yum_repository:
+    name: 'neotechnology.gpg.key'
+    description: 'Neo4j yum repo'
+    baseurl: '{{ neo4j_repo_baseurl }}'
+    gpgcheck: yes
+    enabled: yes
+
+- name: Create neo4j group | Role neo4j
+  become: True
+  become_method: sudo
+  group:
+   name: '{{ neo4j_group }}'
+   state: present
+
+
+- name: Create neo4j user | Role neo4j
+  become: True
+  become_method: sudo
+  user:
+    state: present
+    name: '{{ neo4j_user }}'
+    group: '{{ neo4j_group }}'
+    createhome: no
+
+
+- name: Install neo4j | Role neo4j
+  yum:
+    name: 'neo4j-{{ neo4j_version }}'
+    state: present
+
+
+- name: Start and enable neo4j
+  service:
+    name: neo4j
+    state: started
+    enabled: yes
+
+
+- name: Copy neo4j.conf file | Role neo4j
+  template:
+    src: 'neo4j.conf.j2'
+    dest: '/etc/neo4j/neo4j.conf'
+    backup: yes
+  notify: restart neo4j
+
+
+- name: Wait for neo4j to start | Role neo4j
+  wait_for:
+    port: '{{ neo4j_dbms_connector_http_listen_address }}'
+    timeout: 60
+    delay: 15
+
+
+# - name: Set neo4j password | Role neo4j
+#   shell: |
+#     curl -H "Content-Type: application/json" \
+#     -H "Authorization: Basic `echo -n 'neo4j:{{ neo4j_initial_password }}' | base64`" \
+#     -X POST -d '{"password":"{{ neo4j_password }}"}' \
+#     "http://127.0.0.1:7474/user/neo4j/password"
+
+
+- name: Enable and start firewalld | Role neo4j
+  service: 
+    name: firewalld
+    state: started
+    enabled: yes
+
+
+- name: Open specified http port | Role neo4j
+  become: yes
+  firewalld:
+    port: '{{ neo4j_dbms_connector_http_listen_address }}/tcp'
+    permanent: True
+    state: enabled
+    immediate: yes
+
+
+- name: Open specified bolt port | Role neo4j
+  become: yes
+  firewalld:
+    port: '{{ neo4j_dbms_connector_bolt_listen_address }}/tcp'
+    permanent: True
+    state: enabled
+    immediate: yes
+

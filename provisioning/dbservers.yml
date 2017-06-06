@@ -7,4 +7,4 @@
   roles:
     - common
     - java
-    # - neo4j
+    - neo4j

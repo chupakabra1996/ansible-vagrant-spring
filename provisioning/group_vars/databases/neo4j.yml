@@ -1,1 +1,29 @@
 ---
+
+neo4j_version: '3.2.1'
+
+neo4j_repo_baseurl: 'http://yum.neo4j.org/stable'
+neo4j_gpg_key_url: 'http://debian.neo4j.org/neotechnology.gpg.key'
+
+
+neo4j_user: 'neo4j'
+neo4j_group: 'neo4j'
+
+
+neo4j_dbms_security_auth_enabled: true
+
+neo4j_dbms_connector_bolt_enabled: true
+neo4j_dbms_connector_http_enabled: true
+
+neo4j_dbms_connector_http_listen_address: 7474
+neo4j_dbms_connector_bolt_listen_address: 7687
+
+neo4j_username: 'neo4j'
+
+neo4j_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          63626465613465306537356134643362343736333535396130376666623062653036333734666332
+          6236313035626633373230336639656161623966623731610a616261356465306333333135353665
+          66363866613662646166393562353835613532393937363761336363393437656131376335666631
+          6131363033333136660a393038393137393261356534363930376265373238363935643866343635
+          3232

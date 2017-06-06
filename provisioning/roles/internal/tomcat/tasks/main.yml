@@ -10,7 +10,7 @@
     - configuration
 
 
-- name: Create tomcat user
+- name: Create tomcat user | Role tomcat
   become: True
   become_method: sudo
   user:
@@ -85,6 +85,7 @@
     src: 'conf/tomcat-users.xml.j2'
     dest: '{{ tomcat_user_home }}/conf/tomcat-users.xml'
     backup: yes
+  no_log: True
   tags:
     - configuration
 
