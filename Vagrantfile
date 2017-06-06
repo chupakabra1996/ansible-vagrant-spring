@@ -3,7 +3,7 @@
 VAGRANTFILE_API_VERSION = "2"
 
 # --- Configuration variables ---
-DEFAULT_RAM = 1024
+DEFAULT_RAM = 512
 DEFAULT_CPUS = 1
 DB_RAM = 2048
 
@@ -14,7 +14,6 @@ DOMAIN = ".kpfu.ru"
 BOX = "centos/7"
 
 HTTP_PORT = 8080
-POSTGRES_PORT = 5432
 
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
@@ -77,7 +76,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     host.vm.network "private_network", ip: "192.168.50.2"
 
-    host.vm.network "forwarded_port", guest: HTTP_PORT, host: 8081
+    # host.vm.network "forwarded_port", guest: HTTP_PORT, host: 8081
     host.vm.network :forwarded_port, guest: 22, host: 20021, id: "ssh"
 
   end
@@ -93,7 +92,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     host.vm.network "private_network", ip: "192.168.50.3"
 
-    host.vm.network "forwarded_port", guest: HTTP_PORT, host: 8082
+    # host.vm.network "forwarded_port", guest: HTTP_PORT, host: 8082
     host.vm.network :forwarded_port, guest: 22, host: 20022, id: "ssh"
 
   end
