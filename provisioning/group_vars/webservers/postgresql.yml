@@ -22,3 +22,9 @@ postgresql_admin_user: !vault |
           3137
 
 postgresql_port: 5432
+
+postgresql_databases:
+  - name: example_db
+    owner: '{{ postgresql_admin_user }}'
+
+  
